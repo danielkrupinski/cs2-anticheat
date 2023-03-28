@@ -57,3 +57,19 @@ processDll() does the following:
 Later PDB file name is extracted from path and hashed.
 
 [InventoryDetail](https://github.com/SteamDatabase/GameTracking-CSGO/blob/49680faef0fbccdead5803e3d559e6a36372ac8f/Protobufs/usermessages.proto#L638-L649) protobuf is filled with the gathered info.
+
+```text
+message InventoryDetail {
+    optional int32 index = 1; // index in the array of registered modules
+    optional int64 primary = 2; // image base from IMAGE_OPTIONAL_HEADER
+    optional int64 offset = 3; // size of image
+    optional int64 first = 4;
+    optional int64 base = 5; // dll handle
+    optional string name = 6;
+    optional string base_name = 7;
+    optional int32 base_detail = 8; // crc32 of read-only sections
+    optional int32 base_time = 9; // timestamp from IMAGE_FILE_HEADER
+    optional int32 base_hash = 10; // PDB filename hash
+}
+(fields without a comment are unused)
+```
