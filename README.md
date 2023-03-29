@@ -3,6 +3,31 @@
 Anticheat measures found in the binaries of Counter-Strike 2.
 The analysis is based on the very first beta release.
 
+## VMT pointer check of global interfaces
+
+```cpp
+// 48 89 4C 24 ? 48 81 EC ? ? ? ? 48 8D 4C 24 @ client.dll
+void collectInterfacesData(CUserMessage_Inventory_Response& protobuf);
+```
+
+This function iterates over `g_pInterfaceGlobals` array (name from Source 1 engine) and for every interface fills `InventoryDetail` protobuf:
+
+```text
+message InventoryDetail {
+    optional int32 index = 1; // index in the g_pInterfaceGlobals array
+    optional int64 primary = 2; // *g_pInterfaceGlobals[index] (address of the interface)
+    optional int64 offset = 3; // **g_pInterfaceGlobals[index] (address of virtual method table of the interface)
+    optional int64 first = 4; // address of the first function in the VMT
+    optional int64 base = 5;
+    optional string name = 6;
+    optional string base_name = 7;
+    optional int32 base_detail = 8;
+    optional int32 base_time = 9;
+    optional int32 base_hash = 10; // interface name hash
+}
+(fields without a comment are unused)
+```
+
 ## Integrity of read-only sections of game DLLs
 
 This check is present in `client.dll` under the name "ComputeInventory2".
@@ -16,7 +41,7 @@ For every registered dll:
 struct DllSectionsResult {
     void* baseOfDll;
     IMAGE_NT_HEADERS* ntHeaders;
-    void* buffer; // allocated with VirtualAlloc in processDll()
+    void* buffer; // allocated with VirtualAlloc in processDllSections()
     DWORD timestamp; // from IMAGE_FILE_HEADER::TimeDateStamp
     DWORD pad; // padding
     CSHA1 sha1; // sizeof(CSHA1) == 192, seems not to be computed currently
