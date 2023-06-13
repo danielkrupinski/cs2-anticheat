@@ -16,8 +16,8 @@ The analysis is based on the 6 June 2023 update.
 | --- | --- | --- |
 | CUserMessageRequestDllStatus | CUserMessage_DllStatus | Trusted Mode |
 | CUserMessageRequestUtilAction | CUserMessage_UtilMsg_Response | Checks ConVars for unathorized modifications |
-| CUserMessageRequestInventory | CUserMessage_Inventory_Response | Checks VMT pointers of global interfaces, checks if read-only sections of game DLLs were modified, checks something in entity system
-| CUserMessageRequestDiagnostic | CUserMessage_Diagnostic_Response | Debugger detection |
+| CUserMessageRequestInventory | [CUserMessage_Inventory_Response](#cusermessage_inventory_response) | Checks VMT pointers of global interfaces, checks if read-only sections of game DLLs were modified, checks something in entity system
+| CUserMessageRequestDiagnostic | [CUserMessage_Diagnostic_Response](#cusermessage_diagnostic_response) | Debugger detection |
 
 ## CUserMessage_Inventory_Response
 
@@ -230,3 +230,20 @@ message InventoryDetail {
 }
 (fields without a comment are unused)
 ```
+
+## CUserMessage_Diagnostic_Response
+
+At first `Plat_GetDebugMonitor()` from `tier0.dll` is called and the response is filled with data from DebugMonitor.
+
+Then a thread of id provided through a parameter is opened (`OpenThread(THREAD_ALL_ACCESS, 0, threadId)`) and suspended.
+Thread context is then queried and the thread is resumed.
+
+Following values are copied from thread context into response:
+
+- Dr0
+- Dr1
+- Dr2
+- Dr3
+- DebugControl
+- Rsp
+- Rip
