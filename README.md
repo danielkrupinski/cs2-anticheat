@@ -1,12 +1,30 @@
 # Counter-Strike 2 Anticheat
 
 Anticheat measures found in the binaries of Counter-Strike 2.
-The analysis is based on the very first beta release.
+The analysis is based on the 6 June 2023 update.
 
-## VMT pointer check of global interfaces
+## What's new
+
+### 6 June 2023
+
+- new functionality added to CUserMessage_Inventory_Response to collect something from entity system
+- new CUserMessageRequestDiagnostic / CUserMessage_Diagnostic_Response to detect debuggers
+
+## Detections which use protobufs
+
+| Request proto | Response proto | What is does |
+| --- | --- | --- |
+| CUserMessageRequestDllStatus | CUserMessage_DllStatus | Trusted Mode |
+| CUserMessageRequestUtilAction | CUserMessage_UtilMsg_Response | Checks ConVars for unathorized modifications |
+| CUserMessageRequestInventory | CUserMessage_Inventory_Response | Checks VMT pointers of global interfaces, checks if read-only sections of game DLLs were modified, checks something in entity system
+| CUserMessageRequestDiagnostic | CUserMessage_Diagnostic_Response | Debugger detection |
+
+## CUserMessage_Inventory_Response
+
+### **VMT pointer check of global interfaces**
 
 ```cpp
-// 48 89 4C 24 ? 48 81 EC ? ? ? ? 48 8D 4C 24 @ client.dll
+// E8 ? ? ? ? 48 8D 8C 24 ? ? ? ? E8 ? ? ? ? F6 43 20 02 (relative jump) @ client.dll
 void collectInterfacesData(CUserMessage_Inventory_Response& protobuf);
 ```
 
@@ -142,7 +160,7 @@ NavSystem001
 
 </details>
 
-## Integrity of read-only sections of game DLLs
+### **Integrity of read-only sections of game DLLs**
 
 This check is present in `client.dll` under the name "ComputeInventory2".
 Game DLLs register themselves by calling `Plat_RegisterModule(moduleHandle)` function from `tier0.dll`. The list of registered modules can be retrieved by calling `Plat_GetRegisteredModules()`.
