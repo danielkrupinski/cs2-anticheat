@@ -7,7 +7,7 @@ The analysis is based on the 6 June 2023 update.
 
 ### 6 June 2023
 
-- new functionality added to CUserMessage_Inventory_Response to collect something from entity system
+- new functionality added to CUserMessage_Inventory_Response to collect VMT pointers of entities from entity system
 - new CUserMessageRequestDiagnostic / CUserMessage_Diagnostic_Response to detect debuggers
 
 ## Detections which use protobufs
@@ -16,7 +16,7 @@ The analysis is based on the 6 June 2023 update.
 | --- | --- | --- |
 | CUserMessageRequestDllStatus | CUserMessage_DllStatus | Trusted Mode |
 | CUserMessageRequestUtilAction | CUserMessage_UtilMsg_Response | Checks ConVars for unathorized modifications |
-| CUserMessageRequestInventory | [CUserMessage_Inventory_Response](#cusermessage_inventory_response) | Checks VMT pointers of global interfaces, checks if read-only sections of game DLLs were modified, checks something in entity system
+| CUserMessageRequestInventory | [CUserMessage_Inventory_Response](#cusermessage_inventory_response) | Checks VMT pointers of global interfaces, checks if read-only sections of game DLLs were modified, checks VMT pointers of game entities
 | CUserMessageRequestDiagnostic | [CUserMessage_Diagnostic_Response](#cusermessage_diagnostic_response) | Debugger detection |
 
 ## CUserMessage_Inventory_Response
